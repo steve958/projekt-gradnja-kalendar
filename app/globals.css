@@ -37,3 +37,8 @@ body {
 .details {
   background-color: #DFE3E4;
 }
+
+.test {
+  background-color: goldenrod !important;
+  color: white;
+}
