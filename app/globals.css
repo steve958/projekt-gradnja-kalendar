@@ -38,7 +38,22 @@ body {
   background-color: #DFE3E4;
 }
 
-.test {
-  background-color: goldenrod !important;
+.meeting {
+  background-color: #FACC15 !important;
   color: white;
+}
+
+.start {
+  background-color: #1E40AF !important;
+  color: white;
+}
+
+.end {
+  background-color: #166534 !important;
+  color: white;
+}
+
+.legend {
+  width: 25px;
+  height: 25px;
 }

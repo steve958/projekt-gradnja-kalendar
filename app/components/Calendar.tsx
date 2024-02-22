@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { toast } from 'react-toastify'
-import { collection, addDoc, doc, getDocs, query } from 'firebase/firestore'
+import { collection, addDoc, getDocs } from 'firebase/firestore'
 import { db } from '../firebase'
 
 interface DateEvent {
@@ -39,9 +39,13 @@ export default function CalendarComponent() {
     }, [eventList])
 
     function onChange(e: any) {
-        setNewEvent({ ...newEvent, date: e.toString().slice(0, 15) })
+        const event = eventList.find((event: DateEvent) => event.date === e.toString().slice(0, 15))
+        if (event?.type) {
+            setNewEvent({ ...event })
+        } else {
+            setNewEvent({ ...newEvent, date: e.toString().slice(0, 15) })
+        }
         setDateClicked(true);
-        console.log(e);
         setValue(e)
     }
 
@@ -88,7 +92,17 @@ export default function CalendarComponent() {
         const { date } = arg
         const find = eventList.find((event: DateEvent) => event.date === date.toString().slice(0, 15))
         console.log(find);
-        return find?.type === 'meeting' ? 'test' : ''
+
+        switch (find?.type) {
+            case 'meeting':
+                return find.type
+            case 'start':
+                return find.type
+            case 'end':
+                return find.type
+            default:
+                return ''
+        }
     }
 
 
@@ -100,6 +114,11 @@ export default function CalendarComponent() {
                 value={value}
                 onChange={(e) => onChange(e)}
             />
+            <div className="flex items-center justify-center mt-3">
+                <div className="flex justify-center items-center"><span className="legend bg-yellow-400 m-2"></span>sastanak</div>
+                <div className="flex justify-center items-center"><span className="legend bg-blue-800 m-2"></span>pocetak rada</div>
+                <div className="flex justify-center items-center"><span className="legend bg-green-800 m-2"></span>kraj rada</div>
+            </div>
             {dateClicked && (
                 <form className="max-w-md mx-auto mt-5 w-full h-full">
                     <div className="mb-5">
@@ -197,13 +216,22 @@ export default function CalendarComponent() {
                             <option value="me">Samo meni</option>
                         </select>
                     </div>
-                    <button
-                        onClick={(e) => submitEvent(e)}
-                        type="submit"
-                        className="text-black bg-yellow-400 hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                    >
-                        Sačuvaj
-                    </button>
+                    <div className="flex justify-between">
+                        <button
+                            onClick={(e) => submitEvent(e)}
+                            type="submit"
+                            className="text-black bg-yellow-400 hover:bg-yellow-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        >
+                            Sačuvaj događaj
+                        </button>
+                        <button
+                            onClick={(e) => submitEvent(e)}
+                            type="submit"
+                            className="text-black bg-red-400 hover:bg-red-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        >
+                            Obriši događaj
+                        </button>
+                    </div>
                 </form>
             )}
         </div>
