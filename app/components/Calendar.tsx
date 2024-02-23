@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { toast } from 'react-toastify'
-import { collection, addDoc, getDocs } from 'firebase/firestore'
+import { collection, addDoc, getDocs, setDoc, doc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 
 interface DateEvent {
@@ -35,15 +35,23 @@ export default function CalendarComponent() {
     }, []);
 
     useEffect(() => {
-        console.log(eventList);
-    }, [eventList])
+        console.log(newEvent);
+    }, [newEvent])
 
     function onChange(e: any) {
         const event = eventList.find((event: DateEvent) => event.date === e.toString().slice(0, 15))
-        if (event?.type) {
+        if (event?.description) {
             setNewEvent({ ...event })
         } else {
-            setNewEvent({ ...newEvent, date: e.toString().slice(0, 15) })
+            setNewEvent({
+                type: 'meeting',
+                description: '',
+                contact: '',
+                location: '',
+                visible: 'all',
+                date: e.toString().slice(0, 15)
+            })
+            console.log(newEvent);
         }
         setDateClicked(true);
         setValue(e)
@@ -59,20 +67,36 @@ export default function CalendarComponent() {
     }
 
     async function submitEvent(e: any) {
+        let response: any = ''
         e.preventDefault()
         if ([...Object.values(newEvent)].some((property) => property === '')) {
             toast.error('Popuni sva polja')
         } else {
-
-            const response = await addDoc(collection(db, 'events',), {
-                type: newEvent.type.trim(),
-                description: newEvent.description.trim(),
-                contact: newEvent.contact.trim(),
-                location: newEvent.location.trim(),
-                visible: newEvent.visible.trim(),
-                date: newEvent.date
-            })
-            if (response.id) {
+            const find = eventList.find((event: DateEvent) => event.date === value.toString().slice(0, 15))
+            if (find?.description) {
+                console.log(find);
+                const docRef = doc(db, 'events')
+                const newDocs = eventList.filter((event: DateEvent) => event.date !== value.toString().slice(0, 15))
+                newDocs.push({
+                    type: newEvent.type.trim(),
+                    description: newEvent.description.trim(),
+                    contact: newEvent.contact.trim(),
+                    location: newEvent.location.trim(),
+                    visible: newEvent.visible.trim(),
+                    date: newEvent.date
+                })
+                response = await updateDoc(docRef, { ...newDocs })
+            } else {
+                response = await addDoc(collection(db, 'events'), {
+                    type: newEvent.type.trim(),
+                    description: newEvent.description.trim(),
+                    contact: newEvent.contact.trim(),
+                    location: newEvent.location.trim(),
+                    visible: newEvent.visible.trim(),
+                    date: newEvent.date
+                })
+            }
+            if (response?.id) {
                 toast.success('Uspešno sačuvan događaj')
                 setNewEvent({
                     type: 'meeting',
@@ -91,8 +115,6 @@ export default function CalendarComponent() {
     function generateClassName(arg: any) {
         const { date } = arg
         const find = eventList.find((event: DateEvent) => event.date === date.toString().slice(0, 15))
-        console.log(find);
-
         switch (find?.type) {
             case 'meeting':
                 return find.type
