@@ -57,3 +57,7 @@ body {
   width: 25px;
   height: 25px;
 }
+
+.disabled:disabled {
+  background-color: #ababab !important;
+}

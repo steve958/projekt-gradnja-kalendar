@@ -2,131 +2,176 @@
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { toast } from 'react-toastify'
-import { collection, addDoc, getDocs, setDoc, doc, updateDoc } from 'firebase/firestore'
-import { db } from '../firebase'
+import { toast } from "react-toastify";
+import {
+    collection,
+    addDoc,
+    getDocs,
+    setDoc,
+    doc,
+    updateDoc,
+    query,
+    where,
+    deleteDoc,
+} from "firebase/firestore";
+import { db } from "../firebase";
 
 interface DateEvent {
-    type: string,
-    description: string,
-    contact: string,
-    location: string,
-    visible: string
-    date: string
+    type: string;
+    description: string;
+    contact: string;
+    location: string;
+    visible: string;
+    date: string;
 }
 
 export default function CalendarComponent() {
     const [isClient, setIsClient] = useState<boolean>(false);
     const [value, setValue] = useState<Date>(new Date());
     const [dateClicked, setDateClicked] = useState<boolean>(false);
-    const [eventList, setEventList] = useState<DateEvent[]>([])
+    const [deleteEvent, setDeleteEvent] = useState<boolean>(false)
+    const [eventList, setEventList] = useState<DateEvent[]>([]);
     const [newEvent, setNewEvent] = useState<DateEvent>({
-        type: 'meeting',
-        description: '',
-        contact: '',
-        location: '',
-        visible: 'all',
-        date: ''
-    })
+        type: "meeting",
+        description: "",
+        contact: "",
+        location: "",
+        visible: "all",
+        date: "",
+    });
 
     useEffect(() => {
         setIsClient(true);
-        getEventsList()
+        getEventsList();
     }, []);
 
-    useEffect(() => {
-        console.log(newEvent);
-    }, [newEvent])
-
     function onChange(e: any) {
-        const event = eventList.find((event: DateEvent) => event.date === e.toString().slice(0, 15))
+        const event = eventList.find(
+            (event: DateEvent) => event.date === e.toString().slice(0, 15)
+        );
         if (event?.description) {
-            setNewEvent({ ...event })
+            setNewEvent({ ...event });
+            setDeleteEvent(true)
         } else {
             setNewEvent({
-                type: 'meeting',
-                description: '',
-                contact: '',
-                location: '',
-                visible: 'all',
-                date: e.toString().slice(0, 15)
-            })
-            console.log(newEvent);
+                type: "meeting",
+                description: "",
+                contact: "",
+                location: "",
+                visible: "all",
+                date: e.toString().slice(0, 15),
+            });
+            setDeleteEvent(false)
         }
         setDateClicked(true);
-        setValue(e)
+        setValue(e);
     }
 
     async function getEventsList() {
         const querySnapshot = await getDocs(collection(db, "events"));
-        const data = [] as any
+        const data = [] as any;
         querySnapshot.forEach((doc) => {
-            data.push(doc.data())
-        })
-        setEventList(data)
+            data.push(doc.data());
+        });
+        setEventList(data);
     }
 
     async function submitEvent(e: any) {
-        let response: any = ''
-        e.preventDefault()
-        if ([...Object.values(newEvent)].some((property) => property === '')) {
-            toast.error('Popuni sva polja')
+        let response: any = "";
+        e.preventDefault();
+        if ([...Object.values(newEvent)].some((property) => property === "")) {
+            toast.error("Popuni sva polja");
         } else {
-            const find = eventList.find((event: DateEvent) => event.date === value.toString().slice(0, 15))
-            if (find?.description) {
-                console.log(find);
-                const docRef = doc(db, 'events')
-                const newDocs = eventList.filter((event: DateEvent) => event.date !== value.toString().slice(0, 15))
-                newDocs.push({
+            const q = query(
+                collection(db, "events"),
+                where("date", "==", value.toString().slice(0, 15))
+            );
+            let id = "";
+            let newDocs = {};
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                id = doc.id;
+                newDocs = doc.data();
+            });
+            if (id) {
+                const docRef = doc(db, "events", id);
+                newDocs = {
                     type: newEvent.type.trim(),
                     description: newEvent.description.trim(),
                     contact: newEvent.contact.trim(),
                     location: newEvent.location.trim(),
                     visible: newEvent.visible.trim(),
-                    date: newEvent.date
-                })
-                response = await updateDoc(docRef, { ...newDocs })
-            } else {
-                response = await addDoc(collection(db, 'events'), {
+                    date: newEvent.date,
+                };
+                response = await updateDoc(docRef, { ...newDocs });
+            }
+            else {
+                response = await addDoc(collection(db, "events"), {
                     type: newEvent.type.trim(),
                     description: newEvent.description.trim(),
                     contact: newEvent.contact.trim(),
                     location: newEvent.location.trim(),
                     visible: newEvent.visible.trim(),
-                    date: newEvent.date
-                })
+                    date: newEvent.date,
+                });
             }
-            if (response?.id) {
-                toast.success('Uspešno sačuvan događaj')
-                setNewEvent({
-                    type: 'meeting',
-                    description: '',
-                    contact: '',
-                    location: '',
-                    visible: 'all',
-                    date: ''
-                })
-            } else {
-                toast.error('Desila se greška')
-            }
+            toast.success("Uspešno sačuvan događaj");
+            setNewEvent({
+                type: "meeting",
+                description: "",
+                contact: "",
+                location: "",
+                visible: "all",
+                date: "",
+            });
+            getEventsList()
         }
+    }
+
+    async function removeEvent(e: any) {
+        e.preventDefault()
+        const q = query(
+            collection(db, "events"),
+            where("date", "==", value.toString().slice(0, 15))
+        );
+        let id = "";
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            id = doc.id;
+        });
+        if (id) {
+            setDeleteEvent(true)
+            const response = await deleteDoc(doc(db, "events", id));
+            toast.success("Uspešno obrisan događaj");
+        }
+        setNewEvent({
+            type: "meeting",
+            description: "",
+            contact: "",
+            location: "",
+            visible: "all",
+            date: "",
+        });
+        getEventsList()
+        setDeleteEvent(false)
     }
 
     function generateClassName(arg: any) {
-        const { date } = arg
-        const find = eventList.find((event: DateEvent) => event.date === date.toString().slice(0, 15))
+        const { date } = arg;
+        const find = eventList.find(
+            (event: DateEvent) => event.date === date.toString().slice(0, 15)
+        );
         switch (find?.type) {
-            case 'meeting':
-                return find.type
-            case 'start':
-                return find.type
-            case 'end':
-                return find.type
+            case "meeting":
+                return find.type;
+            case "start":
+                return find.type;
+            case "end":
+                return find.type;
             default:
-                return ''
+                return "";
         }
     }
-
 
     return isClient ? (
         <div className="flex justify-center flex-col items-center">
@@ -137,12 +182,22 @@ export default function CalendarComponent() {
                 onChange={(e) => onChange(e)}
             />
             <div className="flex items-center justify-center mt-3">
-                <div className="flex justify-center items-center"><span className="legend bg-yellow-400 m-2"></span>sastanak</div>
-                <div className="flex justify-center items-center"><span className="legend bg-blue-800 m-2"></span>pocetak rada</div>
-                <div className="flex justify-center items-center"><span className="legend bg-green-800 m-2"></span>kraj rada</div>
+                <div className="flex justify-center items-center">
+                    <span className="legend bg-yellow-400 m-2"></span>sastanak
+                </div>
+                <div className="flex justify-center items-center">
+                    <span className="legend bg-blue-800 m-2"></span>pocetak rada
+                </div>
+                <div className="flex justify-center items-center">
+                    <span className="legend bg-green-800 m-2"></span>kraj rada
+                </div>
             </div>
             {dateClicked && (
                 <form className="max-w-md mx-auto mt-5 w-full h-full">
+                    <div className="mb-5 flex justify-around bg-gray-300 p-1 rounded">
+                        <p>Odabran datum:</p>
+                        <p>{value.toString().slice(0, 15)}</p>
+                    </div>
                     <div className="mb-5">
                         <label
                             htmlFor="dropdown"
@@ -152,7 +207,9 @@ export default function CalendarComponent() {
                         </label>
                         <select
                             value={newEvent.type}
-                            onChange={(e) => setNewEvent({ ...newEvent, type: e.target.value })}
+                            onChange={(e) =>
+                                setNewEvent({ ...newEvent, type: e.target.value })
+                            }
                             required
                             id="dropdown"
                             name="dropdown"
@@ -166,7 +223,9 @@ export default function CalendarComponent() {
                     <div className="relative z-0 w-full mb-5 group">
                         <input
                             value={newEvent.description}
-                            onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                            onChange={(e) =>
+                                setNewEvent({ ...newEvent, description: e.target.value })
+                            }
                             type="text"
                             name="description"
                             id="description"
@@ -185,7 +244,9 @@ export default function CalendarComponent() {
                         <div className="relative z-0 w-full mb-5 group">
                             <input
                                 value={newEvent.contact}
-                                onChange={(e) => setNewEvent({ ...newEvent, contact: e.target.value })}
+                                onChange={(e) =>
+                                    setNewEvent({ ...newEvent, contact: e.target.value })
+                                }
                                 type="text"
                                 name="floating_contact"
                                 id="floating_contact"
@@ -202,7 +263,9 @@ export default function CalendarComponent() {
                         </div>
                         <div className="relative z-0 w-full mb-5 group">
                             <input
-                                onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+                                onChange={(e) =>
+                                    setNewEvent({ ...newEvent, location: e.target.value })
+                                }
                                 value={newEvent.location}
                                 type="text"
                                 name="floating_location"
@@ -227,7 +290,9 @@ export default function CalendarComponent() {
                             Vidljivo
                         </label>
                         <select
-                            onChange={(e) => setNewEvent({ ...newEvent, visible: e.target.value })}
+                            onChange={(e) =>
+                                setNewEvent({ ...newEvent, visible: e.target.value })
+                            }
                             value={newEvent.visible}
                             required
                             id="visible"
@@ -247,9 +312,9 @@ export default function CalendarComponent() {
                             Sačuvaj događaj
                         </button>
                         <button
-                            onClick={(e) => submitEvent(e)}
-                            type="submit"
-                            className="text-black bg-red-400 hover:bg-red-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            disabled={!deleteEvent}
+                            onClick={(e) => removeEvent(e)}
+                            className="disabled text-black bg-red-400 hover:bg-red-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                         >
                             Obriši događaj
                         </button>
