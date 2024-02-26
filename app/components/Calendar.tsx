@@ -30,6 +30,7 @@ export default function CalendarComponent() {
     const [dateClicked, setDateClicked] = useState<boolean>(false);
     const [deleteEvent, setDeleteEvent] = useState<boolean>(false)
     const [eventList, setEventList] = useState<DateEvent[]>([]);
+    const [eventActive, setEventActive] = useState<boolean>(false)
     const [authClicked, setAuthClicked] = useState<boolean>(false)
     const [userAuthorized, setUserAuthorized] = useState<boolean>(false)
     const [password, setPassword] = useState<string>('')
@@ -54,7 +55,9 @@ export default function CalendarComponent() {
         if (event?.description) {
             setNewEvent({ ...event });
             setDeleteEvent(true)
+            setEventActive(true)
         } else {
+            setEventActive(false)
             setNewEvent({
                 type: "meeting",
                 description: "",
@@ -175,6 +178,19 @@ export default function CalendarComponent() {
         }
     }
 
+    function translateType(type: string) {
+        switch (type) {
+            case "meeting":
+                return 'Sastanak';
+            case "start":
+                return 'Početak radova';
+            case "end":
+                return 'Završetak radova';
+            default:
+                return "";
+        }
+    }
+
     function authCheck() {
         if (password === 'dekiglavomeki') {
             toast.success('Uspešna autorizacija')
@@ -210,7 +226,7 @@ export default function CalendarComponent() {
                     <span className="legend bg-green-800 m-2"></span>kraj rada
                 </div>
             </div>
-            {dateClicked && (
+            {dateClicked && userAuthorized && (
                 <form className="max-w-md mx-auto mt-5 w-full h-full">
                     <div className="mb-5 flex justify-around bg-gray-300 p-1 rounded">
                         <p>Odabran datum:</p>
@@ -336,6 +352,66 @@ export default function CalendarComponent() {
                         >
                             Obriši događaj
                         </button>
+                    </div>
+                </form>
+            )}
+            {eventActive && !userAuthorized && newEvent.visible === 'all' && (
+                <form className="max-w-md mx-auto mt-5 w-full h-full">
+                    <div className="mb-5 flex justify-around bg-gray-300 p-1 rounded">
+                        <p>Datum</p>
+                        <p>{value.toString().slice(0, 15)}</p>
+                    </div>
+                    <div className="mb-5">
+                        <label
+                            htmlFor="dropdown"
+                            className="block text-sm font-medium text-gray-700 dark:text-gray-400"
+                        >
+                            {translateType(newEvent.type)}
+                        </label>
+                    </div>
+                    <div className="relative z-0 w-full mb-5 group">
+                        <input
+                            value={newEvent.description}
+                            type="text"
+                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                            disabled
+                        />
+                        <label
+                            htmlFor="description"
+                            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                        >
+                            Opis
+                        </label>
+                    </div>
+                    <div className="grid md:grid-cols-2 md:gap-6">
+                        <div className="relative z-0 w-full mb-5 group">
+                            <input
+                                value={newEvent.contact}
+                                type="text"
+                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                disabled
+                            />
+                            <label
+                                htmlFor="floating_contact"
+                                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                            >
+                                Kontakt osoba
+                            </label>
+                        </div>
+                        <div className="relative z-0 w-full mb-5 group">
+                            <input
+                                value={newEvent.location}
+                                type="text"
+                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                disabled
+                            />
+                            <label
+                                htmlFor="floating_location"
+                                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                            >
+                                Lokacija
+                            </label>
+                        </div>
                     </div>
                 </form>
             )}
