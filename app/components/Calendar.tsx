@@ -206,7 +206,7 @@ export default function CalendarComponent() {
         <div className="flex justify-center flex-col items-center">
             {!userAuthorized ? <p className="mb-2">Autorizuj se da dodaješ i menjaš događaje</p> : <p className="mb-2">Zdravo, Deki</p>}
             {!userAuthorized && <div className="text-center">
-                <button onClick={() => setAuthClicked(true)} className="text-white bg-rose-400 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" type="button" data-drawer-target="drawer-example" data-drawer-show="drawer-example" aria-controls="drawer-example">
+                <button onClick={() => setAuthClicked(true)} className="text-white w-50 bg-rose-400 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" type="button" data-drawer-target="drawer-example" data-drawer-show="drawer-example" aria-controls="drawer-example">
                     Autorizacija
                 </button>
             </div>}
@@ -416,7 +416,7 @@ export default function CalendarComponent() {
                     </div>
                 </form>
             )}
-            {authClicked && <div className="w-full absolute p-5 top-9 cover flex flex-col items-center"><div className="relative z-0 w-full mb-5 group flex flex-col">
+            {authClicked && <div className="max-w-1/2 absolute p-5 top-9 rounded cover flex flex-col items-center"><div className="relative z-0 w-full mb-5 group flex flex-col">
                 <p className="absolute right-0 bg-white p-2 rounded top-0" onClick={() => setAuthClicked(false)}>X</p>
                 <input
                     value={password}
@@ -431,9 +431,11 @@ export default function CalendarComponent() {
                 >
                     Šifra
                 </label>
-                <button onClick={authCheck} className="text-white bg-yellow-400 m-2 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" type="button" data-drawer-target="drawer-example" data-drawer-show="drawer-example" aria-controls="drawer-example">
-                    Autorizacija
-                </button>
+                <div className="text-center">
+                    <button onClick={authCheck} className="text-white max-w-1/2 bg-yellow-400 m-2 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" type="button" data-drawer-target="drawer-example" data-drawer-show="drawer-example" aria-controls="drawer-example">
+                        Autorizacija
+                    </button>
+                </div>
             </div></div>}
         </div>
     ) : (
