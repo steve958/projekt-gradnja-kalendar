@@ -166,19 +166,15 @@ export default function CalendarComponent() {
         const find = eventList.find(
             (event: DateEvent) => event.date === date.toString().slice(0, 15)
         );
-        if (find?.visible === 'all') {
-            switch (find?.type) {
-                case "meeting":
-                    return find.type;
-                case "start":
-                    return find.type;
-                case "end":
-                    return find.type;
-                default:
-                    return "";
-            }
-        } else {
-            return ''
+        switch (find?.type) {
+            case "meeting":
+                return find.type;
+            case "start":
+                return find.type;
+            case "end":
+                return find.type;
+            default:
+                return "";
         }
     }
 
@@ -200,6 +196,7 @@ export default function CalendarComponent() {
             toast.success('Uspešna autorizacija')
             setUserAuthorized(true)
             setAuthClicked(false)
+            getEventsList()
         } else {
             toast.error('Pogrešna šifra')
         }
