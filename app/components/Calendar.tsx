@@ -166,15 +166,19 @@ export default function CalendarComponent() {
         const find = eventList.find(
             (event: DateEvent) => event.date === date.toString().slice(0, 15)
         );
-        switch (find?.type) {
-            case "meeting":
-                return find.type;
-            case "start":
-                return find.type;
-            case "end":
-                return find.type;
-            default:
-                return "";
+        if (find?.visible === 'all') {
+            switch (find?.type) {
+                case "meeting":
+                    return find.type;
+                case "start":
+                    return find.type;
+                case "end":
+                    return find.type;
+                default:
+                    return "";
+            }
+        } else {
+            return ''
         }
     }
 
