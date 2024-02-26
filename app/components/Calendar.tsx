@@ -196,7 +196,7 @@ export default function CalendarComponent() {
     }
 
     function authCheck() {
-        if (password === 'dekiglavomeki') {
+        if (password === 'Dekiglavomeki') {
             toast.success('Uspešna autorizacija')
             setUserAuthorized(true)
             setAuthClicked(false)
