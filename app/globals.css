@@ -61,3 +61,7 @@ body {
 .disabled:disabled {
   background-color: #ababab !important;
 }
+
+.cover {
+  background-color: rgba(0, 0, 0, 0.8);
+}

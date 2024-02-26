@@ -7,7 +7,6 @@ import {
     collection,
     addDoc,
     getDocs,
-    setDoc,
     doc,
     updateDoc,
     query,
@@ -31,6 +30,7 @@ export default function CalendarComponent() {
     const [dateClicked, setDateClicked] = useState<boolean>(false);
     const [deleteEvent, setDeleteEvent] = useState<boolean>(false)
     const [eventList, setEventList] = useState<DateEvent[]>([]);
+    const [authClicked, setAuthClicked] = useState<boolean>(false)
     const [newEvent, setNewEvent] = useState<DateEvent>({
         type: "meeting",
         description: "",
@@ -175,6 +175,12 @@ export default function CalendarComponent() {
 
     return isClient ? (
         <div className="flex justify-center flex-col items-center">
+            <p className="mb-2">Autorizuj se da dodaješ i menjaš događaje</p>
+            <div className="text-center">
+                <button onClick={() => setAuthClicked(true)} className="text-white bg-rose-400 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" type="button" data-drawer-target="drawer-example" data-drawer-show="drawer-example" aria-controls="drawer-example">
+                    Autorizacija
+                </button>
+            </div>
             <Calendar
                 tileClassName={generateClassName}
                 className="w-full p-4 rounded-lg"
@@ -307,20 +313,36 @@ export default function CalendarComponent() {
                         <button
                             onClick={(e) => submitEvent(e)}
                             type="submit"
-                            className="text-black bg-yellow-400 hover:bg-yellow-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            className="text-black bg-yellow-400 m-1 hover:bg-yellow-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                         >
                             Sačuvaj događaj
                         </button>
                         <button
                             disabled={!deleteEvent}
                             onClick={(e) => removeEvent(e)}
-                            className="disabled text-black bg-red-400 hover:bg-red-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            className="disabled text-black bg-red-400 m-1 hover:bg-red-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                         >
                             Obriši događaj
                         </button>
                     </div>
                 </form>
             )}
+            {authClicked && <div className="w-full absolute p-5 top-10 cover flex flex-col items-center"><div className="relative z-0 w-full mb-5 group flex flex-col">
+                <input
+                    type="text"
+                    className="block py-2.5 px-0 w-50 text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=" "
+                    required
+                />
+                <label
+                    className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                    Šifra
+                </label>
+                <button onClick={() => setAuthClicked(false)} className="text-white bg-yellow-400 m-2 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" type="button" data-drawer-target="drawer-example" data-drawer-show="drawer-example" aria-controls="drawer-example">
+                    Autorizacija
+                </button>
+            </div></div>}
         </div>
     ) : (
         <div className="flex justify-center items-center">
