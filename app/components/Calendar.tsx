@@ -183,7 +183,7 @@ export default function CalendarComponent() {
             />
             <div className="flex items-center justify-center mt-3">
                 <div className="flex justify-center items-center">
-                    <span className="legend bg-yellow-400 m-2"></span>sastanak
+                    <span className="legend bg-yellow-400 m-2 ml-0"></span>sastanak
                 </div>
                 <div className="flex justify-center items-center">
                     <span className="legend bg-blue-800 m-2"></span>pocetak rada
