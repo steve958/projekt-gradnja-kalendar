@@ -221,7 +221,7 @@ export default function CalendarComponent() {
                     <span className="legend bg-yellow-400 m-2 ml-0"></span>sastanak
                 </div>
                 <div className="flex justify-center items-center">
-                    <span className="legend bg-blue-800 m-2"></span>pocetak rada
+                    <span className="legend bg-blue-800 m-2"></span>početak rada
                 </div>
                 <div className="flex justify-center items-center">
                     <span className="legend bg-green-800 m-2"></span>kraj rada
@@ -417,7 +417,7 @@ export default function CalendarComponent() {
                 </form>
             )}
             {authClicked && <div className="max-w-1/2 absolute p-5 top-9 rounded cover flex flex-col items-center"><div className="relative z-0 w-full mb-5 group flex flex-col">
-                <p className="absolute right-0 bg-white p-2 rounded top-0" onClick={() => setAuthClicked(false)}>X</p>
+                <p className="absolute right-0 bg-white p-2 rounded top-0 cursor-pointer" onClick={() => setAuthClicked(false)}>X</p>
                 <input
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -433,7 +433,7 @@ export default function CalendarComponent() {
                 </label>
                 <div className="text-center">
                     <button onClick={authCheck} className="text-white max-w-1/2 bg-yellow-400 m-2 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" type="button" data-drawer-target="drawer-example" data-drawer-show="drawer-example" aria-controls="drawer-example">
-                        Autorizacija
+                        Autorizuj
                     </button>
                 </div>
             </div></div>}
