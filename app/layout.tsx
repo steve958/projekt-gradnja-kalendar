@@ -16,6 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <link rel="manifest" href="/manifest.json"></link>
       <link rel="icon" sizes="128x128" href="favicon.ico"></link>
       <body className={inter.className} cz-shortcut-listen='true'>{children}</body>
     </html>
