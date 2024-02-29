@@ -4,9 +4,9 @@
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
-    "name": "projekt-gradnja-calendar",
+    "name": "Dean Projekt Gradnja Kalendar",
     "short_name": "PGC",
-    "description": "calendar",
+    "description": "",
     "icons": [
         {
             "src": "/icon-192x192.png",
