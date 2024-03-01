@@ -65,3 +65,16 @@ body {
 .cover {
   background-color: rgba(0, 0, 0, 0.8);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light;
+  }
+}
+
+/* Chrome */
+@media (forced-colors: active) {
+  :root {
+    color-scheme: light;
+  }
+}
