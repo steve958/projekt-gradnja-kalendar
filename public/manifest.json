@@ -1,12 +1,12 @@
 {
-    "theme_color": "#f69435",
-    "background_color": "#f69435",
+    "theme_color": "#FACC15",
+    "background_color": "#FACC15",
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
     "name": "Dean Projekt Gradnja Kalendar",
     "short_name": "PGC",
-    "description": "",
+    "description": "calendar",
     "icons": [
         {
             "src": "/icon-192x192.png",
