@@ -20,7 +20,6 @@ interface DateEvent {
   description: string;
   contact: string;
   location: string;
-  visible: string;
   date: string;
 }
 
@@ -41,11 +40,10 @@ export default function CalendarComponent(props: CalendarComponentProps) {
   const [userAuthorized, setUserAuthorized] = useState<boolean>(false);
   const [password, setPassword] = useState<string>('');
   const [newEvent, setNewEvent] = useState<DateEvent>({
-    type: 'meeting',
+    type: 'start',
     description: '',
     contact: '',
     location: '',
-    visible: 'all',
     date: '',
   });
 
@@ -65,11 +63,10 @@ export default function CalendarComponent(props: CalendarComponentProps) {
     } else {
       setEventActive(false);
       setNewEvent({
-        type: 'meeting',
+        type: 'start',
         description: '',
         contact: '',
         location: '',
-        visible: 'all',
         date: e.toString().slice(0, 15),
       });
       setDeleteEvent(false);
@@ -111,7 +108,6 @@ export default function CalendarComponent(props: CalendarComponentProps) {
           description: newEvent.description.trim(),
           contact: newEvent.contact.trim(),
           location: newEvent.location.trim(),
-          visible: newEvent.visible.trim(),
           date: newEvent.date,
         };
         response = await updateDoc(docRef, { ...newDocs });
@@ -121,17 +117,15 @@ export default function CalendarComponent(props: CalendarComponentProps) {
           description: newEvent.description.trim(),
           contact: newEvent.contact.trim(),
           location: newEvent.location.trim(),
-          visible: newEvent.visible.trim(),
           date: newEvent.date,
         });
       }
       toast.success('Uspešno sačuvan događaj');
       setNewEvent({
-        type: 'meeting',
+        type: 'start',
         description: '',
         contact: '',
         location: '',
-        visible: 'all',
         date: '',
       });
       getEventsList();
@@ -155,11 +149,10 @@ export default function CalendarComponent(props: CalendarComponentProps) {
       toast.success('Uspešno obrisan događaj');
     }
     setNewEvent({
-      type: 'meeting',
+      type: 'start',
       description: '',
       contact: '',
       location: '',
-      visible: 'all',
       date: '',
     });
     getEventsList();
@@ -172,8 +165,6 @@ export default function CalendarComponent(props: CalendarComponentProps) {
       (event: DateEvent) => event.date === date.toString().slice(0, 15)
     );
     switch (find?.type) {
-      case 'meeting':
-        return find.type;
       case 'start':
         return find.type;
       case 'end':
@@ -185,8 +176,6 @@ export default function CalendarComponent(props: CalendarComponentProps) {
 
   function translateType(type: string) {
     switch (type) {
-      case 'meeting':
-        return 'Sastanak';
       case 'start':
         return 'Početak radova';
       case 'end':
@@ -197,7 +186,7 @@ export default function CalendarComponent(props: CalendarComponentProps) {
   }
 
   function authCheck() {
-    if (password === 'Dekiglavomeki') {
+    if (password === 'Ekonomska1') {
       toast.success('Uspešna autorizacija');
       setUserAuthorized(true);
       setAuthClicked(false);
@@ -240,13 +229,10 @@ export default function CalendarComponent(props: CalendarComponentProps) {
       />
       <div className="flex items-center justify-center mt-3">
         <div className="flex justify-center items-center">
-          <span className="legend bg-yellow-400 m-2 ml-0"></span>sastanak
+          <span className="legend bg-blue-800 m-2"></span>početak radova
         </div>
         <div className="flex justify-center items-center">
-          <span className="legend bg-blue-800 m-2"></span>početak rada
-        </div>
-        <div className="flex justify-center items-center">
-          <span className="legend bg-green-800 m-2"></span>kraj rada
+          <span className="legend bg-green-800 m-2"></span>kraj radova
         </div>
       </div>
       {dateClicked && userAuthorized && (
@@ -339,27 +325,6 @@ export default function CalendarComponent(props: CalendarComponentProps) {
               </label>
             </div>
           </div>
-          <div className="mb-5">
-            <label
-              htmlFor="visible"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-400"
-            >
-              Vidljivo
-            </label>
-            <select
-              onChange={(e) =>
-                setNewEvent({ ...newEvent, visible: e.target.value })
-              }
-              value={newEvent.visible}
-              required
-              id="visible"
-              name="visible"
-              className="mt-1 block w-full py-2.5 px-0 text-sm text-gray-900 bg-transparent border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600"
-            >
-              <option value="all">Svima</option>
-              <option value="me">Samo meni</option>
-            </select>
-          </div>
           <div className="flex justify-between">
             <button
               onClick={(e) => submitEvent(e)}
@@ -378,7 +343,7 @@ export default function CalendarComponent(props: CalendarComponentProps) {
           </div>
         </form>
       )}
-      {eventActive && !userAuthorized && newEvent.visible === 'all' && (
+      {eventActive && !userAuthorized && (
         <form className="max-w-md mx-auto mt-5 w-full h-full">
           <div className="mb-5 flex justify-around bg-gray-300 p-1 rounded">
             <p>Datum</p>
@@ -442,7 +407,7 @@ export default function CalendarComponent(props: CalendarComponentProps) {
         <div className="max-w-1/2 absolute p-5 top-9 rounded cover flex flex-col items-center">
           <div className="relative z-0 w-full mb-5 group flex flex-col">
             <p
-              className="absolute right-0 bg-white p-2 rounded top-0 cursor-pointer"
+              className="absolute text-black right-0 bg-white p-2 rounded top-0 cursor-pointer"
               onClick={() => setAuthClicked(false)}
             >
               X
@@ -451,7 +416,7 @@ export default function CalendarComponent(props: CalendarComponentProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               type="text"
-              className="block py-2.5 px-0 w-50 text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              className="block py-3.5 px-0 w-50 text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               required
             />
