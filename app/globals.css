@@ -23,9 +23,12 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom,
+  background: linear-gradient(
+      to bottom,
       transparent,
-      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
 }
 
 @layer utilities {
@@ -35,16 +38,16 @@ body {
 }
 
 .details {
-  background-color: #DFE3E4;
+  background-color: #dfe3e4;
 }
 
 .meeting {
-  background-color: #FACC15 !important;
+  background-color: #facc15 !important;
   color: white;
 }
 
 .start {
-  background-color: #1E40AF !important;
+  background-color: #1e40af !important;
   color: white;
 }
 
@@ -64,6 +67,12 @@ body {
 
 .cover {
   background-color: rgba(0, 0, 0, 0.8);
+}
+
+.negative {
+  background-color: gainsboro !important;
+  color: white !important;
+  font-weight: 600 !important;
 }
 
 @media (prefers-color-scheme: dark) {

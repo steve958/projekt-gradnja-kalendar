@@ -24,7 +24,13 @@ interface DateEvent {
   date: string;
 }
 
-export default function CalendarComponent() {
+interface CalendarComponentProps {
+  darkThemeAssist: boolean;
+}
+
+export default function CalendarComponent(props: CalendarComponentProps) {
+  const { darkThemeAssist } = props;
+
   const [isClient, setIsClient] = useState<boolean>(false);
   const [value, setValue] = useState<Date>(new Date());
   const [dateClicked, setDateClicked] = useState<boolean>(false);
@@ -224,7 +230,11 @@ export default function CalendarComponent() {
       )}
       <Calendar
         tileClassName={generateClassName}
-        className="w-full p-4 rounded-lg"
+        className={
+          darkThemeAssist
+            ? 'w-full p-4 rounded-lg negative'
+            : 'w-full p-4 rounded-lg'
+        }
         value={value}
         onChange={(e) => onChange(e)}
       />

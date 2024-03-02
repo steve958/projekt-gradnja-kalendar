@@ -32,7 +32,7 @@ export default function Home() {
             </label>
           </div>
         </div>
-        <Calendar />
+        <Calendar darkThemeAssist={darkThemeAssist} />
       </div>
       <ToastContainer />
     </main>
