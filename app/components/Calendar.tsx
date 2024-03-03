@@ -294,7 +294,7 @@ export default function CalendarComponent() {
           tileClassName={generateClassName}
           className={
             darkThemeAssist
-              ? 'w-full p-4 rounded-lg dark:bg-slate-400'
+              ? 'w-full p-4 rounded-lg negative'
               : 'w-full p-4 rounded-lg'
           }
           value={value}
