@@ -208,7 +208,7 @@ export default function CalendarComponent() {
     <>
       {configClicked && (
         <div
-          className="drawer flex flex-col absolute bottom-0 dark:bg-gray-700 left-0 bg-white rounded w-full z-10 p-5 h-64"
+          className="drawer flex flex-col absolute bottom-0 dark:bg-slate-400 left-0 bg-white rounded w-full z-10 p-5 h-64"
           id={closeClicked ? 'close-drawer' : ''}
         >
           <svg
@@ -294,7 +294,7 @@ export default function CalendarComponent() {
           tileClassName={generateClassName}
           className={
             darkThemeAssist
-              ? 'w-full p-4 rounded-lg negative'
+              ? 'w-full p-4 rounded-lg dark:bg-slate-400'
               : 'w-full p-4 rounded-lg'
           }
           value={value}
