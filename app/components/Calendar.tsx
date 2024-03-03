@@ -331,9 +331,8 @@ export default function CalendarComponent() {
                 name="dropdown"
                 className="mt-1 block w-full py-2.5 px-0 text-sm text-gray-900 bg-transparent border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600"
               >
-                <option value="meeting">Sastanak</option>
-                <option value="start">Početak rada</option>
-                <option value="end">Kraj rada</option>
+                <option value="start">Početak radova</option>
+                <option value="end">Kraj radova</option>
               </select>
             </div>
             <div className="relative z-0 w-full mb-5 group">
