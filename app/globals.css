@@ -81,9 +81,10 @@ body {
 }
 
 .config-button {
+  scale: 1.5;
   position: absolute;
   bottom: 20px;
-  left: 20px;
+  left: 45%;
 }
 
 #close-drawer {
