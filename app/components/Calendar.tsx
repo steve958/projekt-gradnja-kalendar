@@ -418,7 +418,7 @@ export default function CalendarComponent() {
         )}
         {eventActive && !userAuthorized && (
           <form className="max-w-md mx-auto mt-5 w-full h-full mb-5">
-            <div className="mb-5 flex justify-around bg-gray-300 p-1 rounded">
+            <div className="mb-5 flex justify-around bg-gray-300 p-1 rounded dark:bg-slate-400 text-black dark:text-black">
               <p>Datum</p>
               <p>{value.toString().slice(0, 15)}</p>
             </div>
