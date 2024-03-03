@@ -213,7 +213,7 @@ export default function CalendarComponent() {
         >
           <svg
             onClick={handleDrawerClose}
-            className="w-6 h-6 text-gray-800 dark:text-white"
+            className="w-6 h-6 text-black dark:text-white"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -244,17 +244,17 @@ export default function CalendarComponent() {
                   htmlFor="default-radio-2"
                   className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                 >
-                  Prilagodi na tamnu temu
+                  Prilagodi tamnoj temi
                 </label>
               </form>
             </div>
             <div className="flex justify-center flex-col items-center">
               {!userAuthorized ? (
-                <p className="mb-2">
+                <p className="mb-2 text-black">
                   Autorizuj se da dodaješ i menjaš događaje
                 </p>
               ) : (
-                <p className="mb-2">Zdravo, Deki</p>
+                <p className="mb-2 text-black">Zdravo, Deki</p>
               )}
               {!userAuthorized && (
                 <div className="max-w-1/2 p-1 rounded flex flex-col items-center">
