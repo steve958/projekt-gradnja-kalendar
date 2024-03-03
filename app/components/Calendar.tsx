@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { toast } from 'react-toastify';
@@ -23,22 +23,19 @@ interface DateEvent {
   date: string;
 }
 
-interface CalendarComponentProps {
-  darkThemeAssist: boolean;
-}
-
-export default function CalendarComponent(props: CalendarComponentProps) {
-  const { darkThemeAssist } = props;
+export default function CalendarComponent() {
+  const [configClicked, setConfigClicked] = useState<boolean>(false);
 
   const [isClient, setIsClient] = useState<boolean>(false);
+  const [darkThemeAssist, setDarkThemeAssist] = useState<boolean>(false);
   const [value, setValue] = useState<Date>(new Date());
   const [dateClicked, setDateClicked] = useState<boolean>(false);
   const [deleteEvent, setDeleteEvent] = useState<boolean>(false);
   const [eventList, setEventList] = useState<DateEvent[]>([]);
   const [eventActive, setEventActive] = useState<boolean>(false);
-  const [authClicked, setAuthClicked] = useState<boolean>(false);
   const [userAuthorized, setUserAuthorized] = useState<boolean>(false);
   const [password, setPassword] = useState<string>('');
+  const [closeClicked, setCloseClicked] = useState<boolean>(false);
   const [newEvent, setNewEvent] = useState<DateEvent>({
     type: 'start',
     description: '',
@@ -189,256 +186,319 @@ export default function CalendarComponent(props: CalendarComponentProps) {
     if (password === 'Ekonomska1') {
       toast.success('Uspešna autorizacija');
       setUserAuthorized(true);
-      setAuthClicked(false);
       getEventsList();
     } else {
       toast.error('Pogrešna šifra');
     }
   }
 
+  function handleConfigClicked() {
+    setConfigClicked(!configClicked);
+  }
+
+  function handleDrawerClose() {
+    setCloseClicked(true);
+    setTimeout(() => {
+      setConfigClicked(false);
+      setCloseClicked(false);
+    }, 300);
+  }
+
   return isClient ? (
-    <div className="flex justify-center flex-col items-center">
-      {!userAuthorized ? (
-        <p className="mb-2">Autorizuj se da dodaješ i menjaš događaje</p>
-      ) : (
-        <p className="mb-2">Zdravo, Deki</p>
-      )}
-      {!userAuthorized && (
-        <div className="text-center">
-          <button
-            onClick={() => setAuthClicked(true)}
-            className="text-white w-50 bg-rose-400 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            type="button"
-            data-drawer-target="drawer-example"
-            data-drawer-show="drawer-example"
-            aria-controls="drawer-example"
+    <>
+      {configClicked && (
+        <div
+          className="drawer flex flex-col absolute bottom-0 left-0 bg-white rounded w-full z-10 p-5 h-64"
+          id={closeClicked ? 'close-drawer' : ''}
+        >
+          <svg
+            onClick={handleDrawerClose}
+            className="w-6 h-6 text-gray-800 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 14 8"
           >
-            Autorizacija
-          </button>
+            <path
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="m1 1 5.326 5.7a.909.909 0 0 0 1.348 0L13 1"
+            />
+          </svg>
+          <div className="flex flex-col mb-4 items-center w-full justify-center">
+            <div className="flex items-center mb-4">
+              <form>
+                <input
+                  id="default-radio-2"
+                  type="radio"
+                  value=""
+                  onClick={() => setDarkThemeAssist(!darkThemeAssist)}
+                  checked={darkThemeAssist}
+                  onChange={() => {}}
+                  name="default-radio"
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label
+                  htmlFor="default-radio-2"
+                  className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >
+                  Prilagodi na tamnu temu
+                </label>
+              </form>
+            </div>
+            <div className="flex justify-center flex-col items-center">
+              {!userAuthorized ? (
+                <p className="mb-2">
+                  Autorizuj se da dodaješ i menjaš događaje
+                </p>
+              ) : (
+                <p className="mb-2">Zdravo, Deki</p>
+              )}
+              {!userAuthorized && (
+                <div className="max-w-1/2 p-1 rounded flex flex-col items-center">
+                  <div className="relative z-0 w-full m-1 group flex flex-col">
+                    <input
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      type="text"
+                      className="block py-3.5 px-0 w-50 text-sm bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                      placeholder=" "
+                      required
+                    />
+                    <label className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                      Šifra
+                    </label>
+                    <div className="text-center">
+                      <button
+                        onClick={authCheck}
+                        className="text-white max-w-1/2 bg-yellow-400 m-2 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                        type="button"
+                        data-drawer-target="drawer-example"
+                        data-drawer-show="drawer-example"
+                        aria-controls="drawer-example"
+                      >
+                        Autorizuj
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
-      <Calendar
-        tileClassName={generateClassName}
-        className={
-          darkThemeAssist
-            ? 'w-full p-4 rounded-lg negative'
-            : 'w-full p-4 rounded-lg'
-        }
-        value={value}
-        onChange={(e) => onChange(e)}
-      />
-      <div className="flex items-center justify-center mt-3">
-        <div className="flex justify-center items-center">
-          <span className="legend bg-blue-800 m-2"></span>početak radova
+      <div className="flex justify-center flex-col items-center">
+        <Calendar
+          tileClassName={generateClassName}
+          className={
+            darkThemeAssist
+              ? 'w-full p-4 rounded-lg negative'
+              : 'w-full p-4 rounded-lg'
+          }
+          value={value}
+          onChange={(e) => onChange(e)}
+        />
+        <div className="flex items-center justify-center mt-3">
+          <div className="flex justify-center items-center">
+            <span className="legend bg-blue-800 m-2"></span>početak radova
+          </div>
+          <div className="flex justify-center items-center">
+            <span className="legend bg-green-800 m-2"></span>kraj radova
+          </div>
         </div>
-        <div className="flex justify-center items-center">
-          <span className="legend bg-green-800 m-2"></span>kraj radova
-        </div>
-      </div>
-      {dateClicked && userAuthorized && (
-        <form className="max-w-md mx-auto mt-5 w-full h-full">
-          <div className="mb-5 flex justify-around bg-gray-300 p-1 rounded">
-            <p>Odabran datum:</p>
-            <p>{value.toString().slice(0, 15)}</p>
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="dropdown"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-400"
-            >
-              Odaberi tip događaja
-            </label>
-            <select
-              value={newEvent.type}
-              onChange={(e) =>
-                setNewEvent({ ...newEvent, type: e.target.value })
-              }
-              required
-              id="dropdown"
-              name="dropdown"
-              className="mt-1 block w-full py-2.5 px-0 text-sm text-gray-900 bg-transparent border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600"
-            >
-              <option value="meeting">Sastanak</option>
-              <option value="start">Početak rada</option>
-              <option value="end">Kraj rada</option>
-            </select>
-          </div>
-          <div className="relative z-0 w-full mb-5 group">
-            <input
-              value={newEvent.description}
-              onChange={(e) =>
-                setNewEvent({ ...newEvent, description: e.target.value })
-              }
-              type="text"
-              name="description"
-              id="description"
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-              required
-            />
-            <label
-              htmlFor="description"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Opis
-            </label>
-          </div>
-          <div className="grid md:grid-cols-2 md:gap-6">
+        {dateClicked && userAuthorized && (
+          <form className="max-w-md mx-auto mt-5 w-full h-full mb-5">
+            <div className="mb-5 flex justify-around bg-gray-300 p-1 rounded">
+              <p>Odabran datum:</p>
+              <p>{value.toString().slice(0, 15)}</p>
+            </div>
+            <div className="mb-5">
+              <label
+                htmlFor="dropdown"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-400"
+              >
+                Odaberi tip događaja
+              </label>
+              <select
+                value={newEvent.type}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, type: e.target.value })
+                }
+                required
+                id="dropdown"
+                name="dropdown"
+                className="mt-1 block w-full py-2.5 px-0 text-sm text-gray-900 bg-transparent border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600"
+              >
+                <option value="meeting">Sastanak</option>
+                <option value="start">Početak rada</option>
+                <option value="end">Kraj rada</option>
+              </select>
+            </div>
             <div className="relative z-0 w-full mb-5 group">
               <input
-                value={newEvent.contact}
+                value={newEvent.description}
                 onChange={(e) =>
-                  setNewEvent({ ...newEvent, contact: e.target.value })
+                  setNewEvent({ ...newEvent, description: e.target.value })
                 }
                 type="text"
-                name="floating_contact"
-                id="floating_contact"
+                name="description"
+                id="description"
                 className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                 placeholder=" "
                 required
               />
               <label
-                htmlFor="floating_contact"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                htmlFor="description"
+                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
               >
-                Kontakt osoba
+                Opis
               </label>
             </div>
-            <div className="relative z-0 w-full mb-5 group">
-              <input
-                onChange={(e) =>
-                  setNewEvent({ ...newEvent, location: e.target.value })
-                }
-                value={newEvent.location}
-                type="text"
-                name="floating_location"
-                id="floating_location"
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder=" "
-                required
-              />
-              <label
-                htmlFor="floating_location"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-              >
-                Lokacija
-              </label>
+            <div className="grid md:grid-cols-2 md:gap-6">
+              <div className="relative z-0 w-full mb-5 group">
+                <input
+                  value={newEvent.contact}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, contact: e.target.value })
+                  }
+                  type="text"
+                  name="floating_contact"
+                  id="floating_contact"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  required
+                />
+                <label
+                  htmlFor="floating_contact"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  Kontakt osoba
+                </label>
+              </div>
+              <div className="relative z-0 w-full mb-5 group">
+                <input
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, location: e.target.value })
+                  }
+                  value={newEvent.location}
+                  type="text"
+                  name="floating_location"
+                  id="floating_location"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  required
+                />
+                <label
+                  htmlFor="floating_location"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  Lokacija
+                </label>
+              </div>
             </div>
-          </div>
-          <div className="flex justify-between">
-            <button
-              onClick={(e) => submitEvent(e)}
-              type="submit"
-              className="text-black bg-yellow-400 m-1 hover:bg-yellow-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              Sačuvaj događaj
-            </button>
-            <button
-              disabled={!deleteEvent}
-              onClick={(e) => removeEvent(e)}
-              className="disabled text-black bg-red-400 m-1 hover:bg-red-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              Obriši događaj
-            </button>
-          </div>
-        </form>
-      )}
-      {eventActive && !userAuthorized && (
-        <form className="max-w-md mx-auto mt-5 w-full h-full">
-          <div className="mb-5 flex justify-around bg-gray-300 p-1 rounded">
-            <p>Datum</p>
-            <p>{value.toString().slice(0, 15)}</p>
-          </div>
-          <div className="mb-5">
-            <label
-              htmlFor="dropdown"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-400"
-            >
-              {translateType(newEvent.type)}
-            </label>
-          </div>
-          <div className="relative z-0 w-full mb-5 group">
-            <input
-              value={newEvent.description}
-              type="text"
-              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              disabled
-            />
-            <label
-              htmlFor="description"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >
-              Opis
-            </label>
-          </div>
-          <div className="grid md:grid-cols-2 md:gap-6">
-            <div className="relative z-0 w-full mb-5 group">
-              <input
-                value={newEvent.contact}
-                type="text"
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                disabled
-              />
-              <label
-                htmlFor="floating_contact"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-              >
-                Kontakt osoba
-              </label>
-            </div>
-            <div className="relative z-0 w-full mb-5 group">
-              <input
-                value={newEvent.location}
-                type="text"
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                disabled
-              />
-              <label
-                htmlFor="floating_location"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-              >
-                Lokacija
-              </label>
-            </div>
-          </div>
-        </form>
-      )}
-      {authClicked && (
-        <div className="max-w-1/2 absolute p-5 top-9 rounded cover flex flex-col items-center">
-          <div className="relative z-0 w-full mb-5 group flex flex-col">
-            <p
-              className="absolute text-black right-0 bg-white p-2 rounded top-0 cursor-pointer"
-              onClick={() => setAuthClicked(false)}
-            >
-              X
-            </p>
-            <input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              type="text"
-              className="block py-3.5 px-0 w-50 text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-              placeholder=" "
-              required
-            />
-            <label className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-              Šifra
-            </label>
-            <div className="text-center">
+            <div className="flex justify-between">
               <button
-                onClick={authCheck}
-                className="text-white max-w-1/2 bg-yellow-400 m-2 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                type="button"
-                data-drawer-target="drawer-example"
-                data-drawer-show="drawer-example"
-                aria-controls="drawer-example"
+                onClick={(e) => submitEvent(e)}
+                type="submit"
+                className="text-black bg-yellow-400 m-1 hover:bg-yellow-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Autorizuj
+                Sačuvaj događaj
+              </button>
+              <button
+                disabled={!deleteEvent}
+                onClick={(e) => removeEvent(e)}
+                className="disabled text-black bg-red-400 m-1 hover:bg-red-600 text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                Obriši događaj
               </button>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
+          </form>
+        )}
+        {eventActive && !userAuthorized && (
+          <form className="max-w-md mx-auto mt-5 w-full h-full mb-5">
+            <div className="mb-5 flex justify-around bg-gray-300 p-1 rounded">
+              <p>Datum</p>
+              <p>{value.toString().slice(0, 15)}</p>
+            </div>
+            <div className="mb-5">
+              <label
+                htmlFor="dropdown"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-400"
+              >
+                {translateType(newEvent.type)}
+              </label>
+            </div>
+            <div className="relative z-0 w-full mb-5 group">
+              <input
+                value={newEvent.description}
+                type="text"
+                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                disabled
+              />
+              <label
+                htmlFor="description"
+                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+              >
+                Opis
+              </label>
+            </div>
+            <div className="grid md:grid-cols-2 md:gap-6">
+              <div className="relative z-0 w-full mb-5 group">
+                <input
+                  value={newEvent.contact}
+                  type="text"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  disabled
+                />
+                <label
+                  htmlFor="floating_contact"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  Kontakt osoba
+                </label>
+              </div>
+              <div className="relative z-0 w-full mb-5 group">
+                <input
+                  value={newEvent.location}
+                  type="text"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  disabled
+                />
+                <label
+                  htmlFor="floating_location"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  Lokacija
+                </label>
+              </div>
+            </div>
+          </form>
+        )}
+        <span onClick={handleConfigClicked} className="config-button">
+          <svg
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 20 20"
+            className={
+              configClicked
+                ? 'active w-6 h-6 text-gray-800 dark:text-white'
+                : 'inactive w-6 h-6 text-gray-800 dark:text-white'
+            }
+          >
+            <path
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M7.75 4H19M7.75 4a2.25 2.25 0 0 1-4.5 0m4.5 0a2.25 2.25 0 0 0-4.5 0M1 4h2.25m13.5 6H19m-2.25 0a2.25 2.25 0 0 1-4.5 0m4.5 0a2.25 2.25 0 0 0-4.5 0M1 10h11.25m-4.5 6H19M7.75 16a2.25 2.25 0 0 1-4.5 0m4.5 0a2.25 2.25 0 0 0-4.5 0M1 16h2.25"
+            />
+          </svg>
+        </span>
+      </div>
+    </>
   ) : (
     <div className="flex justify-center items-center">
       <div role="status">
