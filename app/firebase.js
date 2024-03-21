@@ -2,12 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA2KKJCRJTKNRAulI3flYQ7TALNjaDe6MY",
-  authDomain: "kalendar-ea8cb.firebaseapp.com",
-  projectId: "kalendar-ea8cb",
-  storageBucket: "kalendar-ea8cb.appspot.com",
-  messagingSenderId: "752460388408",
-  appId: "1:752460388408:web:7380d365da48955eef2ecd"
+  apiKey: "AIzaSyBuPHJCqYu7fGbOObCqMo6mMELix9xfH_Q",
+  authDomain: "kalendar21-3.firebaseapp.com",
+  projectId: "kalendar21-3",
+  storageBucket: "kalendar21-3.appspot.com",
+  messagingSenderId: "209531253674",
+  appId: "1:209531253674:web:373f4422a68773de67b1d3",
+  measurementId: "G-RQSSJZ6MJR"
 };
 
 const app = initializeApp(firebaseConfig);
